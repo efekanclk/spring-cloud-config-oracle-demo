@@ -7,15 +7,13 @@ spring:
   profiles:
     active: jdbc
   datasource:
-    # Docker varsayılan PDB ismi Oracle Free için freepdb1'dir.
     url: jdbc:oracle:thin:@localhost:1527/freepdb1
     username: SYSTEM
-    password: Welcome12345
+    password: efekan12345
     driver-class-name: oracle.jdbc.OracleDriver
   cloud:
     config:
       server:
         jdbc:
           enabled: true
-          # Oracle reserved word çakışmasını önlemek için PROP_KEY kullanan özel sorgumuz
           sql: SELECT PROP_KEY, VALUE from PROPERTIES where APPLICATION=? and PROFILE=? and LABEL=?
