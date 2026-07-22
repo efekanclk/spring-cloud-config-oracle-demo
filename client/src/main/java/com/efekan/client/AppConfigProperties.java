@@ -1,4 +1,4 @@
-package com.example.client;
+package com.efekan.client;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cloud.context.config.annotation.RefreshScope;

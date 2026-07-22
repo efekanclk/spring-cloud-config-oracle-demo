@@ -1,4 +1,4 @@
-package com.example.server;
+package com.efekan.server;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
