@@ -15,5 +15,4 @@ spring:
     config:
       server:
         jdbc:
-          enabled: true
-          sql: SELECT PROP_KEY, VALUE from PROPERTIES where APPLICATION=? and PROFILE=? and LABEL=?
+          sql: SELECT PROP_KEY AS KEY, VALUE from PROPERTIES where APPLICATION=? and PROFILE=? and LABEL=?
