@@ -12,10 +12,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 //yukarıdakiler ise spring web anotasyonlarını projeye dahil etmek için kullanılıyor.
+import org.springframework.web.bind.annotation.*;
 
 @RestController //bu sınıfın bir restcontroller olduğunu bildirir. verilerin json veya metin olarak body'ye yazılmasını sağlar.
 @RequestMapping("/api/v1/config") //controler için ana endpoint yolunu yani base URL'i tanımlamamızı sağlar.
-
+@CrossOrigin(origins = "*")
 public class ConfigEnvironmentController {
 
     private final ConfigEnvironmentService configEnvironmentService;
