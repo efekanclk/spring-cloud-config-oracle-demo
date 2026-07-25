@@ -1,4 +1,43 @@
+//bu sınıf dışarıdan gelen istekleri karşılayan ve yanıt döndüren bir kapı olarak düşünülebilir.
+
 package com.efekan.server.controller;
 
+import com.efekan.server.environment.ConfigPropertyRequest;
+import com.efekan.server.service.ConfigEnvironmentService;
+//üstteki iki  satır ile servis ve dto sınıfını bu sınıfa tanıtıyoruz.
+import org.springframework.http.ResponseEntity;
+//dış dünyaya dönen http yanıtını kapsüllemek için kullanılan spring sınıfını proje dahil etmek için kullanılıyor.
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+//yukarıdakiler ise spring web anotasyonlarını projeye dahil etmek için kullanılıyor.
+
+@RestController //bu sınıfın bir restcontroller olduğunu bildirir. verilerin json veya metin olarak body'ye yazılmasını sağlar.
+@RequestMapping("/api/v1/config") //controler için ana endpoint yolunu yani base URL'i tanımlamamızı sağlar.
+
 public class ConfigEnvironmentController {
+
+    private final ConfigEnvironmentService configEnvironmentService;
+
+    public ConfigEnvironmentController(ConfigEnvironmentService configEnvironmentService) {
+        this.configEnvironmentService = configEnvironmentService;
+    //controller'ın iş kurallarını çalıştırabilmek için servis katmanına bağlanmasını sağlar.
+    }
+
+    @PutMapping("/property") //Endpoint metodu,HTTP PUT isteklerini dinlememizi sağlar.
+    public ResponseEntity<String> updateProperty(@RequestBody ConfigPropertyRequest request) {
+        /*
+        gelen HTTP isteğinin body'sindeki json verisinin otomatik olarak java nesnesine çevrilmesini sağlar.
+        */
+        boolean isUpdated = configEnvironmentService.updateConfig(request);
+        if (isUpdated) {
+            return ResponseEntity.ok("Ayar başarıyla güncellendi.");
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+        //servis katmanını çağırır ve boolean sonucuna göre yanıt döndürür.
+        /*true ise 200 durum kodunu (OK) döndürür. false ise applicaton, profile ve prop_key kombinasyonuna uygun bir
+        kayıt kayıt bulunamadı demektir, bunun sonucunda 404 döndürür */
+    }
 }
