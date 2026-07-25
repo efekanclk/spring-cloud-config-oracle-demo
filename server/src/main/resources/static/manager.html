@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konfigürasyon Yönetimi</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card {
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 350px;
+        }
+        h2 {
+            margin-top: 0;
+            color: #333;
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-size: 14px;
+        }
+        input {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+            text-align: center;
+            font-size: 14px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Ayar Güncelle</h2>
+    <form id="configForm">
+        <div class="form-group">
+            <label for="application">Application:</label>
+            <input type="text" id="application" required placeholder="ör: client-service">
+        </div>
+        <div class="form-group">
+            <label for="profile">Profile:</label>
+            <input type="text" id="profile" required placeholder="ör: dev">
+        </div>
+        <div class="form-group">
+            <label for="propKey">Property Key:</label>
+            <input type="text" id="propKey" required placeholder="ör: server.port">
+        </div>
+        <div class="form-group">
+            <label for="value">Yeni Değer (Value):</label>
+            <input type="text" id="value" required placeholder="ör: 8081">
+        </div>
+        <button type="submit">Güncelle</button>
+    </form>
+
+    <div id="result"></div>
+</div>
+
+<script>
+    document.getElementById('configForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.display = 'none';
+
+        // Form verilerini DTO JSON formatımıza uygun paketliyoruz
+        const payload = {
+            application: document.getElementById('application').value,
+            profile: document.getElementById('profile').value,
+            propKey: document.getElementById('propKey').value,
+            value: document.getElementById('value').value
+        };
+
+        try {
+            // Port 8888 üzerindeki Spring Boot sunucusuna tam adres (absolute URL) veriyoruz
+            const response = await fetch('http://localhost:8888/api/v1/config/property', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (response.ok) {
+                const msg = await response.text();
+                resultDiv.className = 'success';
+                resultDiv.innerText = msg;
+            } else if (response.status === 404) {
+                resultDiv.className = 'error';
+                resultDiv.innerText = 'Hata: Belirtilen ayar veritabanında bulunamadı!';
+            } else {
+                resultDiv.className = 'error';
+                resultDiv.innerText = 'Bir hata oluştu. Status: ' + response.status;
+            }
+        } catch (error) {
+            resultDiv.className = 'error';
+            resultDiv.innerText = 'Sunucuya bağlanılamadı!';
+        }
+
+        resultDiv.style.display = 'block';
+    });
+</script>
+
+</body>
+</html>
