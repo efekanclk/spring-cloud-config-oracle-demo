@@ -28,10 +28,10 @@ public class ConfigEnvironmentService {
         Controllerden gelen ConfigPropertyRequest sınıfını açar, içindeki alanları ayırıp repository'e gönderir.
          */
         int updatedRows = jdbcConfigRepository.updateConfig(
-                request.getApplication(),
-                request.getProfile(),
-                request.getPropKey(),
-                request.getValue()
+                request.application(),
+                request.profile(),
+                request.propKey(),
+                request.value()
         );
 
         return updatedRows > 0;

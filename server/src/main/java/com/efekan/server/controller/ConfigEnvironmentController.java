@@ -1,4 +1,4 @@
-//bu sınıf dışarıdan gelen istekleri karşılayan ve yanıt döndüren bir kapı olarak düşünülebilir.
+//bu sınıf dışarıdan gelen istekleri karşılayan ve yanıt döndüren bir kapıdır
 
 package com.efekan.server.controller;
 
@@ -14,9 +14,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-//yukarıdakiler ise spring web anotasyonlarını projeye dahil etmek için kullanılıyor.
 import org.springframework.web.bind.annotation.*;
-
+//yukarıdakiler ise spring web anotasyonlarını projeye dahil etmek için kullanılıyor.
 import jakarta.servlet.http.HttpServletRequest;
 //spring'in istemciden gelen http isteğinin detaylarına erişmemizi sağlar.
 import java.util.Map;
@@ -26,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @RestController //bu sınıfın bir restcontroller olduğunu bildirir. verilerin json veya metin olarak body'ye yazılmasını sağlar.
 @RequestMapping("/api/v1/config") //controler için ana endpoint yolunu yani base URL'i tanımlamamızı sağlar.
 @CrossOrigin(origins = "*") //farklı kaynaklardan gelen isteklere izin verir (CORS kısıtlaması için)
+
 public class ConfigEnvironmentController {
 
     private final ConfigEnvironmentService configEnvironmentService;
@@ -58,12 +58,13 @@ public class ConfigEnvironmentController {
             @RequestParam String application,
             @RequestParam String profile,
             HttpServletRequest request
-            //URL üzerinden gelen application ve profile parametreleri ile istemcinin IP adresini yakalamak için kullanılan metod
+            //URL üzerinden gelen application ve profile parametreleri ile istemcinin IP adresini yakalamak için kullanılan metod.
     ) {
+
         // İsteği atan kullanıcının IP adresini alıyoruz
         String ipAddress = request.getRemoteAddr();
 
-        // Araya tire (-) koyarak unique key oluşturuyoruz (örn: "myapp-default")
+        // Araya tire (-) koyarak unique key oluşturuyoruz
         String uniqueKey = application + "-" + profile;
 
         // Model nesnesini oluşturuyoruz
