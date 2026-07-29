@@ -3,6 +3,7 @@
 package com.efekan.server.controller;
 
 import com.efekan.server.environment.ConfigPropertyRequest;
+import com.efekan.server.service.CEStore;
 import com.efekan.server.service.ConfigEnvironmentService;
 //üstteki iki  satır ile servis ve dto sınıfını bu sınıfa tanıtıyoruz.
 
@@ -24,56 +25,32 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @RestController //bu sınıfın bir restcontroller olduğunu bildirir. verilerin json veya metin olarak body'ye yazılmasını sağlar.
 @RequestMapping("/api/v1/config") //controler için ana endpoint yolunu yani base URL'i tanımlamamızı sağlar.
-@CrossOrigin(origins = "*") //farklı kaynaklardan gelen isteklere izin verir (CORS kısıtlaması için)
 
 public class ConfigEnvironmentController {
 
     private final ConfigEnvironmentService configEnvironmentService;
+    private final CEStore ceStore;
 
-    private final Map<String, ConnectedUsers> connectedUsersMap = new ConcurrentHashMap<>();
-    //sisteme bağlanan kullanıcıları applicaton-profile anahtarıyla hafızada tutar.
-    public ConfigEnvironmentController(ConfigEnvironmentService configEnvironmentService) {
+    public ConfigEnvironmentController(ConfigEnvironmentService configEnvironmentService, CEStore ceStore) {
         this.configEnvironmentService = configEnvironmentService;
-    //controller'ın iş kurallarını çalıştırabilmek için servis katmanına bağlanmasını sağlar.
+        this.ceStore = ceStore;
     }
 
-    @PutMapping("/property") //Endpoint metodu,HTTP PUT isteklerini dinlememizi sağlar.
-    public ResponseEntity<String> updateProperty(@RequestBody ConfigPropertyRequest request) {
-        /*
-        gelen HTTP isteğinin body'sindeki json verisinin otomatik olarak java nesnesine çevrilmesini sağlar.
-        */
+    @PutMapping("/property")
+    public String updateProperty(@RequestBody ConfigPropertyRequest request) {
         boolean isUpdated = configEnvironmentService.updateConfig(request);
         if (isUpdated) {
-            return ResponseEntity.ok("Ayar başarıyla güncellendi.");
-        } else {
-            return ResponseEntity.notFound().build();
+            /*
+            3. ceStore'dan application ve profile'e göre veri bulunacak.
+            Bulunan verinin ipAddress'ine /actuator/refresh apisine post isteği at.
+             */
+            return "Ayar başarıyla güncellendi.";
         }
-        //servis katmanını çağırır ve boolean sonucuna göre yanıt döndürür.
-        /*true ise 200 durum kodunu (OK) döndürür. false ise applicaton, profile ve prop_key kombinasyonuna uygun bir
-        kayıt kayıt bulunamadı demektir, bunun sonucunda 404 döndürür */
+        throw new RuntimeException("bulunamadı");
     }
 
-    @GetMapping("/connected-users") //HTTP GET isteklerini dinlememizi sağlayan metod.
-    public ResponseEntity<Map<String, ConnectedUsers>> getConnectedUser(
-            @RequestParam String application,
-            @RequestParam String profile,
-            HttpServletRequest request
-            //URL üzerinden gelen application ve profile parametreleri ile istemcinin IP adresini yakalamak için kullanılan metod.
-    ) {
-
-        // İsteği atan kullanıcının IP adresini alıyoruz
-        String ipAddress = request.getRemoteAddr();
-
-        // Araya tire (-) koyarak unique key oluşturuyoruz
-        String uniqueKey = application + "-" + profile;
-
-        // Model nesnesini oluşturuyoruz
-        ConnectedUsers connectedUser = new ConnectedUsers(application, profile, ipAddress);
-
-        // Map'e ekliyoruz. Aynı key varsa üzerine yazar (günceller), yoksa yeni ekler
-        connectedUsersMap.put(uniqueKey, connectedUser);
-
-        // Güncel haritanın tamamını dönüyoruz
-        return ResponseEntity.ok(connectedUsersMap);
+    @GetMapping("/connected-users/{application}/{profile}")
+    public Map<String, ConnectedUsers> getConnectedUser(@PathVariable String application, @PathVariable String profile) {
+        return ceStore.getConnectedUsersMap();
     }
 }
