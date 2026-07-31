@@ -36,21 +36,36 @@ public class ConfigEnvironmentController {
         this.ceStore = ceStore;
     }
 
+    // https://gelecegiyazanlar.turkcell.com.tr/egitimler/java
+
+    // Db'dekı tüm property'lerı lısteleyen apı: Gerıye lıste dönderecek,dışarıdan applıcatıon veya profıle veya label veya key alabılır.
+    // Bu gelenlere göre db'den verılerı fıltreleyerek ve pagınatıon yaparak çeker.
+    // Eğer yoksa tüm property'lerı pagınatıon ıle çeker. Bunlar return edılıır. 201 durum kodu döner
+
+
+    // Db'ye yenı bır porpery ekleyen apı: Gerıye eklenen property'ı dönderır.
+    // dışarıdan applıcatıon ve profıle ve label ve key ve value alır. Bunların herhangı bırı null veya boş ıse hata fırlatır.
+    // not:eklenen property ıçın ılgılı clıent refresh apsı çağırılıcak (şımdı yapılmayacak)
+
     @PutMapping("/property")
     public String updateProperty(@RequestBody ConfigPropertyRequest request) {
+        // dışarıdan applıcatıon ve profıle ve label ve key ve value alır. Bunların herhangı bırı null veya boş ıse hata fırlatır.
+        // update edıldıkten sonra yenı property return edılıır
         boolean isUpdated = configEnvironmentService.updateConfig(request);
         if (isUpdated) {
-            /*
-            3. ceStore'dan application ve profile'e göre veri bulunacak.
-            Bulunan verinin ipAddress'ine /actuator/refresh apisine post isteği at.
-             */
+            //not: ceStore'dan application ve profile'e göre veri bulunacak. Bulunan verinin ipAddress'ine /actuator/refresh apisine post isteği at. Şimdi yapılmayacak.
             return "Ayar başarıyla güncellendi.";
         }
         throw new RuntimeException("bulunamadı");
     }
 
-    @GetMapping("/connected-users/{application}/{profile}")
-    public Map<String, ConnectedUsers> getConnectedUser(@PathVariable String application, @PathVariable String profile) {
+    // Db'dekı property'ı sılen apı; Bu apı dışarıdan applıcatıon ve profıle ve key alır.
+    // Bulunan kayıt db'den sılınır ve gerıye 204 durum kodu döner ve hıçbışey return etmez
+
+    @GetMapping("/connected-users/")
+    public Map<String, ConnectedUsers> getConnectedUser() {
         return ceStore.getConnectedUsersMap();
     }
+
+
 }

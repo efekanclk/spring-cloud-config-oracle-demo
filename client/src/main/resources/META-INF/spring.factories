@@ -1,3 +1,1 @@
 org.springframework.cloud.bootstrap.BootstrapConfiguration = com.efekan.client.RestConfig
-
-org.springframework.context.ApplicationContextInitializer = com.efekan.client.ServerPortInitializer

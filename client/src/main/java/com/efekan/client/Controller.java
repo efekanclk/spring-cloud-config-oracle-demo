@@ -11,14 +11,12 @@ import java.util.Map;
 public class Controller {
 
     private final AppConfigProperties appConfigProperties;
-    private final RestTemplate restTemplate;
 
     @Value("${config.key:default-value}")
     private String configValue;
 
-    public Controller(AppConfigProperties appConfigProperties, RestTemplate restTemplate) {
+    public Controller(AppConfigProperties appConfigProperties) {
         this.appConfigProperties = appConfigProperties;
-        this.restTemplate = restTemplate;
     }
 
     @GetMapping("/value")
@@ -33,9 +31,4 @@ public class Controller {
         return map;
     }
 
-    @GetMapping("/trigger")
-    public String trigger() {
-
-        return restTemplate.getForObject("http://localhost:8888/myapp/default", String.class);
-    }
 }

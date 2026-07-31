@@ -31,15 +31,9 @@ public class CEFilter extends OncePerRequestFilter {
 
                 String clientPort = request.getHeader("X-Client-Port");
 
-                boolean isConfigServerCall = split.length == 3 && !requestURI.contains("test");
-
-                if (clientPort == null || clientPort.trim().isEmpty()) {
-                    if (!isConfigServerCall) {
-                        throw new IllegalStateException("İstekte X-Client-Port header'ı bulunamadı!");
-                    }
-                } else {
+                if (clientPort != null && !clientPort.trim().isEmpty()) {
                     String ipPort = remoteAddr + ":" + clientPort;
-                    ceStore.put(application, profile, ipPort);
+                ceStore.put(application, profile, ipPort);
                 }
             }
         }
