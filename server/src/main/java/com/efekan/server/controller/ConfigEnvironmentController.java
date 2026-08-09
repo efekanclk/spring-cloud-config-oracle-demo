@@ -1,59 +1,80 @@
 package com.efekan.server.controller;
-
+import com.efekan.server.db.entity.ConfigProperty;
 import com.efekan.server.environment.ConfigPropertyRequest;
-import com.efekan.server.service.CEStore;
-import com.efekan.server.service.ConfigEnvironmentService;
-
 import com.efekan.server.model.ConnectedUsers;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.efekan.server.db.repository.ConfigPropertyPropertyRepository;
+import com.efekan.server.service.CEStore;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestClient;
+
+import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/config")
-
 public class ConfigEnvironmentController {
 
-    private final ConfigEnvironmentService configEnvironmentService;
+    private final ConfigPropertyPropertyRepository configPropertyPropertyRepository;
     private final CEStore ceStore;
+    private final RestClient restClient = RestClient.create();
 
-    public ConfigEnvironmentController(ConfigEnvironmentService configEnvironmentService, CEStore ceStore) {
-        this.configEnvironmentService = configEnvironmentService;
+    public ConfigEnvironmentController(ConfigPropertyPropertyRepository configPropertyPropertyRepository,
+                                       CEStore ceStore) {
+        this.configPropertyPropertyRepository = configPropertyPropertyRepository;
         this.ceStore = ceStore;
     }
-
-    // https://gelecegiyazanlar.turkcell.com.tr/egitimler/java
-
-    // Db'deki tüm property'leri lısteleyen API: Geriye liste dönderecek,dışarıdan application veya profile veya label veya key alabilir.
-    // Bu gelenlere göre DB'den verileri filtreleyerek ve pagination yaparak çeker.
-    // Eğer yoksa tüm property'leri pagination ile çeker. Bunlar return edilir. 201 durum kodu döner
-
-
-    // Db'ye yeni bir property ekleyen apı: Geriye eklenen property'i dönderir.
-    // dışarıdan application ve profile ve label ve key ve value alır. Bunların herhangı biri null veya boş ise hata fırlatır.
-    // not:eklenen property için ilgili client refresh API'si çağrılacak. (Şimdi yapılmayacak.)
-
-    @PutMapping("/property")
-    public String updateProperty(@RequestBody ConfigPropertyRequest request) {
-        // Db'deki tüm property'leri lısteleyen API: Geriye liste dönderecek,dışarıdan application veya profile veya label veya key alabilir.
-        // Update edildikten sonra yeni property return edilir.
-        boolean isUpdated = configEnvironmentService.updateConfig(request);
-        if (isUpdated) {
-            //not: ceStore'dan application ve profile'e göre veri bulunacak. Bulunan verinin ipAddress'ine /actuator/refresh apisine post isteği at. Şimdi yapılmayacak.
-            return "Ayar başarıyla güncellendi.";
-        }
-        throw new RuntimeException("bulunamadı");
+    @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping(path = "/property")
+    public ConfigProperty createProperty(@RequestBody ConfigProperty configProperty) {
+        return configPropertyPropertyRepository.save(configProperty);
     }
 
-    // Db'deki property'i silen API; Bu API dışarıdan application ve profile ve key alır.
-    // Bulunan kayıt db'den silinir ve gerıye 204 durum kodu döner ve hiçbir şey return etmez
+    @ResponseStatus(HttpStatus.CREATED)
+    @PutMapping(path = "/property")
+    public ConfigProperty updateProperty(@RequestBody ConfigPropertyRequest request) {
+        ConfigProperty configProperty = configPropertyPropertyRepository.findByApplicationAndProfileAndLabelAndKey(
+                request.application(), request.profile(), request.label(), request.propKey());
+
+        if (configProperty == null) {
+            throw new RuntimeException("bulunamadı");
+        }
+
+        configProperty.setValue(request.value());
+        ConfigProperty save = configPropertyPropertyRepository.save(configProperty);
+
+        Map<String, List<ConnectedUsers>> getConnectedUser = getConnectedUser();
+        for (Map.Entry<String, List<ConnectedUsers>> entry : getConnectedUser.entrySet()) {
+            if (entry.getKey().equals(request.application() + "-" + request.profile())) {
+                List<ConnectedUsers> value = entry.getValue();
+                value.forEach(connectedUser -> {
+                    String body = restClient.post()
+                            .uri("http://" + connectedUser.ipAddress() + "/actuator/refresh")
+                            .retrieve()
+                            .body(String.class);
+                    System.out.println("body: " + body);
+                });
+            }
+        }
+        return save;
+    }
+
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping(path = "/property/{name}/{profiles}/{label}/{key}")
+    public void updateProperty(@PathVariable String name, @PathVariable String profiles,
+                               @PathVariable String label, @PathVariable String key) {
+
+        ConfigProperty configProperty = configPropertyPropertyRepository.findByApplicationAndProfileAndLabelAndKey(name, profiles, label, key);
+
+        if (configProperty == null) {
+            throw new RuntimeException("bulunamadı");
+        }
+
+        configPropertyPropertyRepository.delete(configProperty);
+    }
 
     @GetMapping("/connected-users/")
-    public Map<String, ConnectedUsers> getConnectedUser() {
+    public Map<String, List<ConnectedUsers>> getConnectedUser() {
         return ceStore.getConnectedUsersMap();
     }
-
 }
