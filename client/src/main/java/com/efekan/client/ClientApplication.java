@@ -1,5 +1,6 @@
 package com.efekan.client;
 
+import  org.jspecify.annotations.NonNull;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.bootstrap.BootstrapRegistry;
@@ -18,11 +19,11 @@ import java.util.List;
 public class ClientApplication {
 
     public static void main(String[] args) {
-        var springApplication = new SpringApplication(ClientApplication.class);
+        var springApplication= new SpringApplication(ClientApplication.class);
 
         springApplication.addBootstrapRegistryInitializer(new BootstrapRegistryInitializer() {
             @Override
-            public void initialize(BootstrapRegistry registry) {
+            public void initialize(@NonNull BootstrapRegistry registry) {
                 try {
                     String serverPort = readPort();
                     registry.registerIfAbsent(RestTemplate.class, context -> {

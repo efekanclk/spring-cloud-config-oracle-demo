@@ -32,7 +32,7 @@ public class ConfigEnvironmentController {
     // Eğer yoksa tüm property'leri pagination ile çeker. Bunlar return edilir. 201 durum kodu döner
 
 
-    // Db'ye yenir bir property ekleyen apı: Geriye eklenen property'i dönderir.
+    // Db'ye yeni bir property ekleyen apı: Geriye eklenen property'i dönderir.
     // dışarıdan application ve profile ve label ve key ve value alır. Bunların herhangı biri null veya boş ise hata fırlatır.
     // not:eklenen property için ilgili client refresh API'si çağrılacak. (Şimdi yapılmayacak.)
 
@@ -55,6 +55,5 @@ public class ConfigEnvironmentController {
     public Map<String, ConnectedUsers> getConnectedUser() {
         return ceStore.getConnectedUsersMap();
     }
-
 
 }
