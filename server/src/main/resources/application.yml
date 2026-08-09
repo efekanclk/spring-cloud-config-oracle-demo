@@ -11,6 +11,11 @@ spring:
     username: SYSTEM
     password: efekan12345
     driver-class-name: oracle.jdbc.OracleDriver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+
   cloud:
     config:
       server:
