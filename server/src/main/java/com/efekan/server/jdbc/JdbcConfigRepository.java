@@ -18,7 +18,7 @@ public class JdbcConfigRepository {private final JdbcClient jdbcClient;
     public int updateConfig(String application, String profile, String propKey, String value) {
         //servis katmanından gelen 4 parametreyi sql sorgusuna iletmek için güncelleme metodu
         String updateSql = """
-            UPDATE PROPERTIES 
+            UPDATE PROPERTIES
             SET VALUE = :val 
             WHERE APPLICATION = :app 
               AND PROFILE = :prof 
