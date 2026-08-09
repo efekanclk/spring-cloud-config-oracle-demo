@@ -19,5 +19,6 @@ spring:
   cloud:
     config:
       server:
+        prefix: /config
         jdbc:
           sql: SELECT PROP_KEY AS KEY, VALUE from PROPERTIES where APPLICATION=? and PROFILE=? and LABEL=?
