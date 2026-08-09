@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Config Dashboard</title>
+    <!-- Tasarım için harici Bootstrap kütüphanesi -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold">Configuration Management</h3>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light text-muted">
+                    <tr>
+                        <th class="fw-semibold">Application</th>
+                        <th class="fw-semibold">Profile</th>
+                        <th class="fw-semibold">Label</th>
+                        <th class="fw-semibold">Key</th>
+                        <th class="fw-semibold">Value</th>
+                        <th class="text-center fw-semibold">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <!-- Veritabanındaki satır sayısı kadar burası dönecek -->
+                    <tr th:each="prop : ${properties}">
+                        <td class="align-middle" th:text="${prop.application}"></td>
+                        <td class="align-middle" th:text="${prop.profile}"></td>
+                        <td class="align-middle" th:text="${prop.label}"></td>
+                        <td class="align-middle" th:text="${prop.key}"></td>
+                        <td class="align-middle" th:text="${prop.value}"></td>
+                        <td class="text-center align-middle">
+                            <!-- Edit Butonu -->
+                            <a th:href="@{/web/config/edit/{id}(id=${prop.id})}" class="btn btn-sm btn-outline-primary px-3 me-2">Edit</a>
+
+                            <!-- Delete Butonu -->
+                            <form th:action="@{/web/config/delete/{id}(id=${prop.id})}" method="post" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-outline-danger px-3" onclick="return confirm('Bu kaydı silmek istediğine emin misin?');">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
