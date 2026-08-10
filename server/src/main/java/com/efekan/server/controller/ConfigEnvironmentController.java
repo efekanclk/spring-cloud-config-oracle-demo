@@ -27,10 +27,11 @@ public class ConfigEnvironmentController {
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(path = "/property")
     public ConfigProperty createProperty(@RequestBody ConfigProperty configProperty) {
-        return configPropertyPropertyRepository.save(configProperty);
+        ConfigProperty save = configPropertyPropertyRepository.save(configProperty);
+        ensembleProperty(configProperty.getApplication(), configProperty.getProfile());
+        return save;
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
     @PutMapping(path = "/property")
     public ConfigProperty updateProperty(@RequestBody ConfigPropertyRequest request) {
         ConfigProperty configProperty = configPropertyPropertyRepository.findByApplicationAndProfileAndLabelAndKey(
@@ -42,10 +43,14 @@ public class ConfigEnvironmentController {
 
         configProperty.setValue(request.value());
         ConfigProperty save = configPropertyPropertyRepository.save(configProperty);
+        ensembleProperty(request.application(), request.profile());
+        return save;
+    }
 
+    void ensembleProperty(String application, String profile){
         Map<String, List<ConnectedUsers>> getConnectedUser = getConnectedUser();
         for (Map.Entry<String, List<ConnectedUsers>> entry : getConnectedUser.entrySet()) {
-            if (entry.getKey().equals(request.application() + "-" + request.profile())) {
+            if (entry.getKey().equals(application + "-" + profile)) {
                 List<ConnectedUsers> value = entry.getValue();
                 value.forEach(connectedUser -> {
                     String body = restClient.post()
@@ -56,7 +61,6 @@ public class ConfigEnvironmentController {
                 });
             }
         }
-        return save;
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
