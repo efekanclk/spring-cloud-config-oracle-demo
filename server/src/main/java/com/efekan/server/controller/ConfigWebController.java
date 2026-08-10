@@ -18,7 +18,6 @@ public class ConfigWebController {
 
     @GetMapping
     public String listProperties(Model model) {
-        System.out.println("DEBUG: ConfigWebController.listProperties method entered!");
         model.addAttribute("properties", repository.findAll());
         return "index";
     }
