@@ -23,6 +23,8 @@
                         <th class="fw-semibold">Label</th>
                         <th class="fw-semibold">Key</th>
                         <th class="fw-semibold">Value</th>
+                        <th class="fw-semibold">Created At</th>
+                        <th class="fw-semibold">Updated At</th>
                         <th class="text-center fw-semibold">Actions</th>
                     </tr>
                     </thead>
@@ -34,6 +36,8 @@
                         <td class="align-middle" th:text="${prop.label}"></td>
                         <td class="align-middle" th:text="${prop.key}"></td>
                         <td class="align-middle" th:text="${prop.value}"></td>
+                        <td class="align-middle" th:text="${#temporals.format(prop.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
+                        <td class="align-middle" th:text="${#temporals.format(prop.updatedAt, 'dd-MM-yyyy HH:mm')}"></td>
                         <td class="text-center align-middle">
                             <a th:href="@{/web/config/edit/{id}(id=${prop.id})}" class="btn btn-sm btn-outline-primary px-3 me-2">Edit</a>
 
