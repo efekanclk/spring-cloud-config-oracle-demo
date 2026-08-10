@@ -24,7 +24,7 @@ public class ConfigWebController {
     }
 
     @GetMapping("/edit/{id}")
-    public String editForm(@PathVariable String id, Model model) { // ID artık String!
+    public String editForm(@PathVariable String id, Model model) {
         ConfigProperty property = repository.findById(id).orElse(null);
         if (property == null) {
             return "redirect:/web/config";
