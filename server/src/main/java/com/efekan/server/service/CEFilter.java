@@ -24,9 +24,9 @@ public class CEFilter extends OncePerRequestFilter {
         if (requestURI != null && !requestURI.contains("/actuator")) {
             String[] split = requestURI.split("/");
 
-            if (split.length >= 3) {
-                String application = split[1];
-                String profile = split[2];
+            if (split.length >= 4) {
+                String application = split[2];
+                String profile = split[3];
                 String remoteAddr = request.getRemoteAddr();
 
                 String clientPort = request.getHeader("X-Client-Port");
@@ -34,6 +34,7 @@ public class CEFilter extends OncePerRequestFilter {
                 if (clientPort != null && !clientPort.trim().isEmpty()) {
                     String ipPort = remoteAddr + ":" + clientPort;
                 ceStore.put(application, profile, ipPort);
+                    logger.info(ipPort);
                 }
             }
         }
