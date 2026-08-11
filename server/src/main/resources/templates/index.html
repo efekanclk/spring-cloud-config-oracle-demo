@@ -15,7 +15,7 @@
     <div class="card shadow-sm border-0">
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
+                <table class="table table-hover mb-0 align-middle">
                     <thead class="table-light text-muted">
                     <tr>
                         <th class="fw-semibold">Application</th>
@@ -25,22 +25,23 @@
                         <th class="fw-semibold">Value</th>
                         <th class="fw-semibold">Created At</th>
                         <th class="fw-semibold">Updated At</th>
-                        <th class="text-center fw-semibold">Actions</th>
+                        <th class="text-center fw-semibold align-middle">
+                            <a th:href="@{/web/config/insert}" class="btn btn-success px-3 fw-bold mb-2 shadow-sm" style="font-size: 13px;">+ Insert</a>
+                            <div class="text-uppercase small">Actions</div>
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
-                    <!-- Veritabanındaki satır sayısı kadar burası dönecek -->
                     <tr th:each="prop : ${properties}">
-                        <td class="align-middle" th:text="${prop.application}"></td>
-                        <td class="align-middle" th:text="${prop.profile}"></td>
-                        <td class="align-middle" th:text="${prop.label}"></td>
-                        <td class="align-middle" th:text="${prop.key}"></td>
-                        <td class="align-middle" th:text="${prop.value}"></td>
-                        <td class="align-middle" th:text="${#temporals.format(prop.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
-                        <td class="align-middle" th:text="${#temporals.format(prop.updatedAt, 'dd-MM-yyyy HH:mm')}"></td>
-                        <td class="text-center align-middle">
+                        <td th:text="${prop.application}"></td>
+                        <td th:text="${prop.profile}"></td>
+                        <td th:text="${prop.label}"></td>
+                        <td th:text="${prop.key}"></td>
+                        <td th:text="${prop.value}"></td>
+                        <td th:text="${#temporals.format(prop.createdAt, 'dd-MM-yyyy HH:mm')}"></td>
+                        <td th:text="${#temporals.format(prop.updatedAt, 'dd-MM-yyyy HH:mm')}"></td>
+                        <td class="text-center">
                             <a th:href="@{/web/config/edit/{id}(id=${prop.id})}" class="btn btn-sm btn-outline-primary px-3 me-2">Edit</a>
-
                             <form th:action="@{/web/config/delete/{id}(id=${prop.id})}" method="post" class="d-inline">
                                 <button type="submit" class="btn btn-sm btn-outline-danger px-3" onclick="return confirm('Bu kaydı silmek istediğine emin misin?');">Delete</button>
                             </form>
