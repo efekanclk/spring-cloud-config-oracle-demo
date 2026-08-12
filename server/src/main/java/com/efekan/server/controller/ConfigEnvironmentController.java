@@ -4,10 +4,12 @@ import com.efekan.server.environment.ConfigPropertyRequest;
 import com.efekan.server.model.ConnectedUsers;
 import com.efekan.server.db.repository.ConfigPropertyPropertyRepository;
 import com.efekan.server.service.CEStore;
+import com.efekan.server.service.ConfigRefreshService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestClient;
 
+import java.io.ObjectInputFilter;
 import java.util.List;
 import java.util.Map;
 
@@ -17,18 +19,20 @@ public class ConfigEnvironmentController {
 
     private final ConfigPropertyPropertyRepository configPropertyPropertyRepository;
     private final CEStore ceStore;
-    private final RestClient restClient = RestClient.create();
+    private final ConfigRefreshService configRefreshService;
 
     public ConfigEnvironmentController(ConfigPropertyPropertyRepository configPropertyPropertyRepository,
-                                       CEStore ceStore) {
+                                       CEStore ceStore,
+                                       ConfigRefreshService configRefreshService) {
         this.configPropertyPropertyRepository = configPropertyPropertyRepository;
         this.ceStore = ceStore;
+        this.configRefreshService = configRefreshService;
     }
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping(path = "/property")
     public ConfigProperty createProperty(@RequestBody ConfigProperty configProperty) {
         ConfigProperty save = configPropertyPropertyRepository.save(configProperty);
-        ensembleProperty(configProperty.getApplication(), configProperty.getProfile());
+        configRefreshService.ensembleProperty(configProperty.getApplication(), configProperty.getProfile());
         return save;
     }
 
@@ -43,25 +47,11 @@ public class ConfigEnvironmentController {
 
         configProperty.setValue(request.value());
         ConfigProperty save = configPropertyPropertyRepository.save(configProperty);
-        ensembleProperty(request.application(), request.profile());
+        configRefreshService.ensembleProperty(request.application(), request.profile());
         return save;
     }
 
-    void ensembleProperty(String application, String profile){
-        Map<String, List<ConnectedUsers>> getConnectedUser = getConnectedUser();
-        for (Map.Entry<String, List<ConnectedUsers>> entry : getConnectedUser.entrySet()) {
-            if (entry.getKey().equals(application + "-" + profile)) {
-                List<ConnectedUsers> value = entry.getValue();
-                value.forEach(connectedUser -> {
-                    String body = restClient.post()
-                            .uri("http://" + connectedUser.ipAddress() + "/actuator/refresh")
-                            .retrieve()
-                            .body(String.class);
-                    System.out.println("body: " + body);
-                });
-            }
-        }
-    }
+
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping(path = "/property/{name}/{profiles}/{label}/{key}")
