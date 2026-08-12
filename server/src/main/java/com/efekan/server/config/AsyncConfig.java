@@ -9,10 +9,10 @@ import java.util.concurrent.Executor;
 
 @Configuration
 @EnableAsync
-public class AsyncExecutor {
+public class AsyncConfig {
 
     @Bean(name = "asyncExecutor")
-    public Executor syncExecutor()
+    public Executor asyncExecutor()
     {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 //        executor.setCorePoolSize(3);
