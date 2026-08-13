@@ -22,8 +22,8 @@ public class ClientPingService {
     private String url;
 
 
-    @Scheduled(initialDelay = 5000,fixedDelay = 5000)
-    public String sendPing() {
+    @Scheduled(fixedDelay = 5000)
+    public void sendPing() {
         try {
             String baseUrl = url.replace("configserver:", "");
             String targetUrl = baseUrl + "/" + application + "/" + profile;
@@ -39,6 +39,6 @@ public class ClientPingService {
             log.info(a);
             System.out.println("Refresh başarısız");
         }
-    return "efekan";}
+    }
 }
 
