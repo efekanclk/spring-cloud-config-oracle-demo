@@ -1,27 +1,23 @@
 package com.efekan.server.controller;
 
-import ch.qos.logback.core.model.processor.PhaseIndicator;
 import com.efekan.server.db.entity.ConfigProperty;
-import com.efekan.server.db.repository.ConfigPropertyPropertyRepository;
-import com.efekan.server.model.ConnectedUsers;
-import com.efekan.server.service.CEStore;
+import com.efekan.server.db.repository.ConfigPropertyRepository;
 import com.efekan.server.service.ConfigRefreshService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestClient;
-
-import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/web/config")
 public class ConfigWebController {
 
-    private final ConfigPropertyPropertyRepository repository;
+    private static final Logger log = LoggerFactory.getLogger(ConfigWebController.class);
+    private final ConfigPropertyRepository repository;
     private final ConfigRefreshService configRefreshService;
 
-    public ConfigWebController(ConfigPropertyPropertyRepository repository, ConfigRefreshService configRefreshService) {
+    public ConfigWebController(ConfigPropertyRepository repository, ConfigRefreshService configRefreshService) {
         this.repository = repository;
         this.configRefreshService = configRefreshService;
     }
