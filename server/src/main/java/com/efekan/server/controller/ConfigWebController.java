@@ -3,8 +3,6 @@ package com.efekan.server.controller;
 import com.efekan.server.db.entity.ConfigProperty;
 import com.efekan.server.db.repository.ConfigPropertyRepository;
 import com.efekan.server.service.ConfigRefreshService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/web/config")
 public class ConfigWebController {
 
-    private static final Logger log = LoggerFactory.getLogger(ConfigWebController.class);
     private final ConfigPropertyRepository repository;
     private final ConfigRefreshService configRefreshService;
 

@@ -20,7 +20,7 @@ public class CustomInterceptor implements ClientHttpRequestInterceptor {
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte [] body, ClientHttpRequestExecution execution) throws IOException {
         request.getHeaders().add("X-Client-Port", serverPort);
-        System.out.println("URL " + request.getURI());
+        log.info("URL {}", request.getURI());
         return execution.execute(request, body);
 
     }
