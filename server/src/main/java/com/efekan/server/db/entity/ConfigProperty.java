@@ -1,10 +1,15 @@
 package com.efekan.server.db.entity;
 
 import jakarta.persistence.*;
+import org.hibernate.envers.AuditTable;
+import org.hibernate.envers.Audited;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "PROPERTIES")
+@Audited
+@AuditTable(value = "PROPERTIES_AUDIT")
 public class ConfigProperty {
 
     @Id
@@ -33,16 +38,16 @@ public class ConfigProperty {
     private LocalDateTime updatedAt;
 
     @PrePersist
-    protected void onCreate() {
+    void onCreate() {
         this.createdAt = LocalDateTime.now();
         this.updatedAt = LocalDateTime.now();
     }
 
     @PreUpdate
-    protected void onUpdate() {
+    void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-    // -----------------------------
+
 
 
     public String getId() { return id; }

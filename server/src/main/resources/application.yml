@@ -15,6 +15,9 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+    properties:
+      org.hibernate.envers.store_data_at_delete: true
+
 
   cloud:
     config:
