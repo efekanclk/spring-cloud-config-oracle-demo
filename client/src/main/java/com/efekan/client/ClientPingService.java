@@ -32,12 +32,11 @@ public class ClientPingService {
                     .uri(targetUrl)
                     .retrieve()
                     .toBodilessEntity();
-
             log.info("ping atıldı: {} - {}", application, profile);
         } catch (Exception e) {
             String a = e.getLocalizedMessage();
             log.info(a);
-            System.out.println("Refresh başarısız");
+            System.out.println("ping başarısız");
         }
     }
 }
