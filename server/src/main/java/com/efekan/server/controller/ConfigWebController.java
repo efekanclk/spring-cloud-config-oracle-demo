@@ -2,6 +2,7 @@ package com.efekan.server.controller;
 
 import com.efekan.server.db.entity.ConfigProperty;
 import com.efekan.server.db.repository.ConfigPropertyRepository;
+import com.efekan.server.service.AuditService;
 import com.efekan.server.service.ConfigRefreshService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,16 +14,28 @@ public class ConfigWebController {
 
     private final ConfigPropertyRepository repository;
     private final ConfigRefreshService configRefreshService;
+    private final AuditService auditService; // 1. Eklendi
 
-    public ConfigWebController(ConfigPropertyRepository repository, ConfigRefreshService configRefreshService) {
+    // Constructor güncellendi
+    public ConfigWebController(ConfigPropertyRepository repository,
+                               ConfigRefreshService configRefreshService,
+                               AuditService auditService) {
         this.repository = repository;
         this.configRefreshService = configRefreshService;
+        this.auditService = auditService;
     }
 
     @GetMapping
     public String listProperties(Model model) {
         model.addAttribute("properties", repository.findAll());
         return "index";
+    }
+
+    // 2. Audit sayfası için yeni endpoint eklendi
+    @GetMapping("/audit")
+    public String showAuditHistory(Model model) {
+        model.addAttribute("audits", auditService.getAllRevisions());
+        return "audit";
     }
 
     @GetMapping("/edit/{id}")
