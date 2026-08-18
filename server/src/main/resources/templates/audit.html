@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Configuration Audit History</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold mb-1">Configuration Audit History</h3>
+            <p class="text-muted small mb-0">PROPERTIES_AUDIT tablosundaki tüm revizyon kayıtları</p>
+        </div>
+        <a th:href="@{/web/config}" class="btn btn-outline-secondary px-3 shadow-sm">&larr; Back to Configs</a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead class="table-light text-muted">
+                    <tr>
+                        <th class="fw-semibold text-center">Rev #</th>
+                        <th class="fw-semibold">Action</th>
+                        <th class="fw-semibold">Rev Date</th>
+                        <th class="fw-semibold">Application</th>
+                        <th class="fw-semibold">Profile</th>
+                        <th class="fw-semibold">Label</th>
+                        <th class="fw-semibold">Key</th>
+                        <th class="fw-semibold">Value</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="audit : ${audits}">
+                        <td class="text-center fw-bold text-secondary" th:text="${audit.revisionNumber}"></td>
+                        <td>
+                            <span th:if="${audit.revisionType.name() == 'ADD'}" class="badge bg-success">ADDED</span>
+                            <span th:if="${audit.revisionType.name() == 'MOD'}" class="badge bg-warning text-dark">MODIFIED</span>
+                            <span th:if="${audit.revisionType.name() == 'DEL'}" class="badge bg-danger">DELETED</span>
+                        </td>
+                        <td th:text="${#dates.format(audit.revisionDate, 'dd-MM-yyyy HH:mm:ss')}"></td>
+                        <td th:text="${audit.application}"></td>
+                        <td th:text="${audit.profile}"></td>
+                        <td th:text="${audit.label}"></td>
+                        <td class="fw-semibold" th:text="${audit.key}"></td>
+                        <td><code class="text-dark" th:text="${audit.value}"></code></td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(audits)}">
+                        <td colspan="8" class="text-center py-4 text-muted">Henüz audit kaydı bulunamadı.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
