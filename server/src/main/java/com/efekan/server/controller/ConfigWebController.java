@@ -14,9 +14,8 @@ public class ConfigWebController {
 
     private final ConfigPropertyRepository repository;
     private final ConfigRefreshService configRefreshService;
-    private final AuditService auditService; // 1. Eklendi
+    private final AuditService auditService;
 
-    // Constructor güncellendi
     public ConfigWebController(ConfigPropertyRepository repository,
                                ConfigRefreshService configRefreshService,
                                AuditService auditService) {
@@ -31,7 +30,6 @@ public class ConfigWebController {
         return "index";
     }
 
-    // 2. Audit sayfası için yeni endpoint eklendi
     @GetMapping("/audit")
     public String showAuditHistory(Model model) {
         model.addAttribute("audits", auditService.getAllRevisions());
